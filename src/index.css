@@ -21,14 +21,13 @@ body {
 }
 
 .header {
-  display: flex;
+  display: inline-block;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
 .btn {
-  display: inline-block;
   background: #000;
   color: #fff;
   border: none;
