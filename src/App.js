@@ -29,6 +29,8 @@ function App() {
   ]
   )
 
+  //const [taskObject] = useState('')
+
   //Delete Tasks
   const deleteTask = (id) => {
     console.log('delete', id)
@@ -49,12 +51,21 @@ function App() {
     setTasks([...tasks, newTask])
   }
 
+  const updateTask = (task) => {
+    console.log('update', task.id)
+    if(task.id !== null){
+      setShowaddTask(true)
+      //taskObject(task)
+      return
+    }
+  }
+
   return (
     <div className="container">
       <Header onAdd={() => setShowaddTask(!showAddTask)} showAddTask={showAddTask} />
       {showAddTask && <AddTask onAdd={addTask} />}
       {tasks.length > 0 ? 
-      <Tasks tasks={tasks} onDelete={deleteTask} onToggle={toggleReminder} /> 
+      <Tasks tasks={tasks} onDelete={deleteTask} onToggle={toggleReminder} onUpdate={updateTask} /> 
       : 'No Tasks To Show'}
     </div>
   );
