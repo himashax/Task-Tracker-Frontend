@@ -2,6 +2,7 @@ import Header from './components/Header'
 import Tasks from './components/Tasks'
 import { useState } from 'react'
 import AddTask from './components/AddTask'
+import EditTask from './components/EditTask'
 
 function App() {
 
@@ -29,8 +30,6 @@ function App() {
   ]
   )
 
-  //const [taskObject] = useState('')
-
   //Delete Tasks
   const deleteTask = (id) => {
     console.log('delete', id)
@@ -51,21 +50,46 @@ function App() {
     setTasks([...tasks, newTask])
   }
 
-  const updateTask = (task) => {
-    console.log('update', task.id)
-    if(task.id !== null){
-      setShowaddTask(true)
-      //taskObject(task)
-      return
-    }
+
+  const [editing, setEditing] = useState(false)
+  const initialFormState = { id: null, text: '', day: '', reminder:false }
+  const [currentTask, setCurrentTask] = useState(initialFormState)
+
+  const editRow = (task) => {
+    setEditing(true)
+    
+    console.log(task)
+    setCurrentTask({ id: task.id, text: task.text, day: task.day, reminder: task.reminder })
   }
+  const updateTask = (id, updatedTask) => {
+    setEditing(false)
+  
+    setTasks(tasks.map((task) => (task.id === id ? updatedTask : task)))
+  }
+
+
+  // //Update Tasks
+  // const updateTask = (task) => {
+  //   //console.log('update', task)
+   
+  //   if(task.id !== null){
+  //     setShowaddTask(true)
+  //     return
+  //   }
+  // }
+
+  
 
   return (
     <div className="container">
       <Header onAdd={() => setShowaddTask(!showAddTask)} showAddTask={showAddTask} />
-      {showAddTask && <AddTask onAdd={addTask} />}
+      {editing ? <EditTask currentTask={currentTask} setEditing={setEditing} updateTask={updateTask} /> : showAddTask && <AddTask onAdd={addTask} /> }
+      
+
+      
+      {/* {showAddTask && <AddTask onAdd={addTask} />} */}
       {tasks.length > 0 ? 
-      <Tasks tasks={tasks} onDelete={deleteTask} onToggle={toggleReminder} onUpdate={updateTask} /> 
+      <Tasks tasks={tasks} onDelete={deleteTask} onToggle={toggleReminder} onUpdate={editRow} /> 
       : 'No Tasks To Show'}
     </div>
   );
