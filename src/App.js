@@ -1,39 +1,40 @@
 import Header from './components/Header'
 import Tasks from './components/Tasks'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import AddTask from './components/AddTask'
-import EditTask from './components/EditTask'
+import axios from 'axios'
 
 function App() {
 
   const [showAddTask, setShowaddTask] = useState(false)
-  const [tasks, setTasks] = useState(
-    [
-      {
-          id: 1,
-          text: 'Doctors Appoinment',
-          day: 'May 15th at 3.00 pm',
-          reminder: true
-      },
-      {
-          id: 2,
-          text: 'Meeting at School',
-          day: 'May 19th at 8.00 am',
-          reminder: true
-      },
-      {
-          id: 3,
-          text: 'Grocery Shopping',
-          day: 'May 14th at 6.00pm',
-          reminder: false
-      }
-  ]
-  )
+  const [tasks, setTasks] = useState([])
+
+  useEffect(() => {
+    getTasks() 
+  }, [])
+
+  const getTasks = () => {
+    axios.get('/myapp/')
+     .then(response => {
+        console.log(response.data)
+        const data = response.data
+        setTasks(data)
+    }).catch(error => {
+        console.log(error);
+    })
+  }
 
   //Delete Tasks
   const deleteTask = (id) => {
     console.log('delete', id)
+
+    axios.delete(`http://127.0.0.1:8000/myapp/delete/${id}`)  
+    .then(res => {  
+      console.log(res);  
+      console.log(res.data);  
+
     setTasks(tasks.filter((task) => task.id !== id) )
+    })
   }
   
   //Toggle Reminder
@@ -43,11 +44,22 @@ function App() {
 
   //Add Tasks
   const addTask = (task) => {
+    
     const id = Math.floor(Math.random() * 1000) + 1
     
     const newTask = {id, ...task}
     console.log(newTask)
-    setTasks([...tasks, newTask])
+    axios
+      .post('/myapp/add/', task)
+      .then(res => {
+        setTasks([...tasks, res.data])
+        console.log('post method', res.data)
+      })
+   // setTasks([...tasks, newTask])
+
+    // const id = Math.floor(Math.random() * 1000) + 1
+    
+    // const newTask = {id, ...task}
   }
 
 
@@ -67,30 +79,15 @@ function App() {
     setTasks(tasks.map((task) => (task.id === id ? updatedTask : task)))
   }
 
-
-  // //Update Tasks
-  // const updateTask = (task) => {
-  //   //console.log('update', task)
-   
-  //   if(task.id !== null){
-  //     setShowaddTask(true)
-  //     return
-  //   }
-  // }
-
-  
-
   return (
     <div className="container">
-      <Header onAdd={() => setShowaddTask(!showAddTask)} showAddTask={showAddTask} />
-      {editing ? <EditTask currentTask={currentTask} setEditing={setEditing} updateTask={updateTask} /> : showAddTask && <AddTask onAdd={addTask} /> }
-      
-
-      
-      {/* {showAddTask && <AddTask onAdd={addTask} />} */}
-      {tasks.length > 0 ? 
-      <Tasks tasks={tasks} onDelete={deleteTask} onToggle={toggleReminder} onUpdate={editRow} /> 
+      <Header onAdd={() => setShowaddTask(!showAddTask)} showAddTask={showAddTask} />    
+      {showAddTask && <AddTask onAdd={addTask} />}
+      {tasks.length > 0 ? <Tasks tasks={tasks} onDelete={deleteTask} onToggle={toggleReminder} onUpdate={editRow} /> 
       : 'No Tasks To Show'}
+
+{/* {editing ? <EditTask currentTask={currentTask} setEditing={setEditing} updateTask={updateTask} /> : showAddTask && <AddTask onAdd={addTask} /> } */}
+
     </div>
   );
 }

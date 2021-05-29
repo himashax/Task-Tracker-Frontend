@@ -28,7 +28,7 @@ const EditTask = ({currentTask, setEditing, updateTask}) => {
             </div>
             <div className='form-control form-control-check'>
                 <label>Set Reminder</label>
-                <input type='checkbox' value={task.reminder} onChange={handleInputChange}></input>
+                <input type='checkbox' checked={task.reminder} onChange={handleInputChange}></input>
             </div>
 
             <input type='submit' value='Save Task' className='btn btn-block'></input>
